@@ -31,6 +31,15 @@ namespace Intro.Service
         [OperationContract]
         [WebGet(UriTemplate = "/EquallyDistributed/TPS?iterations={iterations}")]
         String Bench(String iterations);
+
+        /// <summary>
+        /// Get the ElementGraph by Id
+        /// </summary>
+        /// <param name="id">ElementGraph Id</param>
+        /// <returns>Some info</returns>
+        [OperationContract]
+        [WebGet(UriTemplate = "/EquallyDistributed/GetGraphElement?id={id}")]
+        String GetGraphElement(String id);
 		
 		#endregion
     }

@@ -41,15 +41,12 @@ namespace Intro
 			_toBeBenchenVertices = new List<VertexModel> (_numberOfToBeTestedVertices);
 
 			for (var i = 0; i < nodeCound; i++) {
-//                vertexIDs.Add(
-//                    fallen8.CreateVertex(creationDate, new PropertyContainer[4]
-//                                                           {
-//                                                               new PropertyContainer { PropertyId = 23, Value = 4344 },
-//                                                               new PropertyContainer { PropertyId = 24, Value = "Ein gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaanz langes Property" },
-//                                                               new PropertyContainer { PropertyId = 25, Value = "Ein kurzes Property" },
-//                                                               new PropertyContainer { PropertyId = 26, Value = "Ein gaaaaaaaanz langes Property" },
-//                                                           }).Id);
-				vertexIDs.Add (_f8.CreateVertex (creationDate).Id);
+                vertexIDs.Add(
+                                    _f8.CreateVertex(creationDate, new PropertyContainer[1]
+                                                           {
+                                                               new PropertyContainer { PropertyId = 1, Value = ("Usuario"+i) }
+                                                           }).Id);
+                //vertexIDs.Add (_f8.CreateVertex (creationDate).Id);
                         
 			}
 
@@ -62,13 +59,21 @@ namespace Intro
 					} while (targetVertices.Count < edgeCount);
 
 					foreach (var aTargetVertex in targetVertices) {
-//                    fallen8.CreateEdge(aVertexId, 0, aTargetVertex, creationDate, new PropertyContainer[2]
-//                                                           {
-//                                                               new PropertyContainer { PropertyId = 29, Value = 23.4 },
-//                                                               new PropertyContainer { PropertyId = 1, Value = 2 },
-//                                                           });
-//
-						_f8.CreateEdge (aVertexId, 0, aTargetVertex, creationDate);
+                        //_f8.CreateEdge (aVertexId, 0, aTargetVertex, creationDate);
+                        if (5 > prng.Next(0, 10))
+                        {
+                            _f8.CreateEdge(aVertexId, 0, aTargetVertex, creationDate, new PropertyContainer[1]
+                                                           {
+                                                               new PropertyContainer { PropertyId = 1001, Value = "Sigue A" }
+                                                           });
+                        }
+                        else
+                        {
+                            _f8.CreateEdge(aVertexId, 0, aTargetVertex, creationDate, new PropertyContainer[1]
+                                                           {
+                                                               new PropertyContainer { PropertyId = 1002, Value = "Stalkea A" }
+                                                           });
+                        }
 					}
 				}
 
@@ -162,5 +167,94 @@ namespace Intro
 
 			return edgeCount;
 		}
+
+        public string GetVertexElementById(int id)
+        {
+            VertexModel element;
+
+            _f8.TryGetVertex(out element, id);
+
+            var sb = new StringBuilder();
+            string userName;
+            element.TryGetProperty<String>(out userName, 1);
+
+            sb.AppendLine(String.Format("Elemento Id {0}. Element Creation Date {1}, Nombre de Usuario {2}", element.Id, element.CreationDate, userName));
+
+            sb.AppendLine(String.Format("Sus Vecinos son: "));
+            List<VertexModel> _neighbors = element.GetAllNeighbors();
+            foreach (var _neighbor in _neighbors)
+            {
+                string targetUserName;
+                _neighbor.TryGetProperty<String>(out targetUserName, 1);
+                sb.AppendLine(String.Format(targetUserName));
+            }
+
+            ReadOnlyCollection<EdgeModel> _outEdges;
+            sb.AppendLine(String.Format("Sigue A: "));
+            element.TryGetOutEdge(out _outEdges, 0);
+            foreach (var outEdge in _outEdges)
+            {
+                ReadOnlyCollection<PropertyContainer> _propertys = outEdge.GetAllProperties();
+                foreach (var prop in _propertys)
+                {
+                    if (prop.PropertyId == 1001)
+                    {
+                        string targetUserName;
+                        outEdge.TargetVertex.TryGetProperty<String>(out targetUserName, 1);
+                        sb.AppendLine(String.Format(targetUserName));
+                    }
+                }
+            }
+
+            sb.AppendLine(String.Format("Stalkea A: "));
+            foreach (var outEdge in _outEdges)
+            {
+                ReadOnlyCollection<PropertyContainer> _propertys = outEdge.GetAllProperties();
+                foreach (var prop in _propertys)
+                {
+                    if (prop.PropertyId == 1002)
+                    {
+                        string targetUserName;
+                        outEdge.TargetVertex.TryGetProperty<String>(out targetUserName, 1);
+                        sb.AppendLine(String.Format(targetUserName));
+                    }
+                }
+            }
+
+            ReadOnlyCollection<EdgeModel> _inEdges;
+            element.TryGetInEdge(out _inEdges, 0);
+
+            sb.AppendLine(String.Format("Es  Seguido Por: "));
+            foreach (var inEdge in _inEdges)
+            {
+                ReadOnlyCollection<PropertyContainer> _propertys = inEdge.GetAllProperties();
+                foreach (var prop in _propertys)
+                {
+                    if (prop.PropertyId == 1001)
+                    {
+                        string targetUserName;
+                        inEdge.SourceVertex.TryGetProperty<String>(out targetUserName, 1);
+                        sb.AppendLine(String.Format(targetUserName));
+                    }
+                }
+            }
+
+            sb.AppendLine(String.Format("Es Stalkeado Por: "));
+            foreach (var inEdge in _inEdges)
+            {
+                ReadOnlyCollection<PropertyContainer> _propertys = inEdge.GetAllProperties();
+                foreach (var prop in _propertys)
+                {
+                    if (prop.PropertyId == 1002)
+                    {
+                        string targetUserName;
+                        inEdge.SourceVertex.TryGetProperty<String>(out targetUserName, 1);
+                        sb.AppendLine(String.Format(targetUserName));
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
 	}
 }

@@ -78,6 +78,11 @@ namespace Intro.Service
 			return _introProvider.Bench(Convert.ToInt32(iterations));
         }
 
+        public string GetGraphElement(string id)
+        {
+            return _introProvider.GetVertexElementById(Convert.ToInt32(id));
+        }
+
         #endregion
 
         #region IDisposable Members
